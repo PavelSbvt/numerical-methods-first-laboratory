@@ -13,34 +13,83 @@ class SimpleIterationMethod:
     # Метод простой итерации
     # Метод касательных (Ньютона)
     def __init__(self):
-        pass
+        self.accuracy = 0.001
+        self.max_iter = 10
+        self.t = 1
 
-    def run(self) -> None:
+    def run(self, a: float, b: float) -> None:
         """
         Метод для запуска процесса поиска решения
         трансцендентного уравнения методом простой итерации
 
+        :param a: Левая граница отрезка
+        :param b: Правая граница отрезка
+
         :return: None
         """
+
+        Rich.print_spacer()
         Rich.simple_log("Запуск метода простой итерации")
-
-        # Максимально допустимая погрешность расчёта - точность
-        accuracy = 0.001
-
-        num_x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-        # g(x) = x + f(x).
-        # функция g(x) определена и дифференцируема на
-        # отрезке num_x[0, 10], причём все её значения  g(x) ∈ num_x[0, 10]
-        Rich.print_spacer()
-        Rich.simple_log(f"g(x) = sqrt(1/(1 + x**4))")
-        Rich.debug_log(f"Вычисление значений g(x)∈[{str(min(num_x))},{str(max(num_x))}]")
-        Rich.print_spacer()
-        for x in num_x:
-            g = sqrt(1/(1 + x**4))
-            Rich.debug_log(f"g({x}) = {g}")
+        Rich.simple_log(f"f(x) = 1/(1 + x**4) - {self.t}*x**2")
+        Rich.simple_log(f"g(x) = 1 / sqrt({self.t} * (1 + x**4))")
+        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], ε = {self.accuracy}")
         Rich.print_spacer()
 
+        # 1. проверка сходимости
+        self.check_convergence(a, b)
+
+        # 2. x0 = середина отрезка
+        x0 = (a + b) / 2
+        Rich.debug_log(f"x0 = {x0:.6f}")
+
+        # 3. итерации
+        x_prev = x0
+        for iteration in range(1, self.max_iter + 1):
+            x_next = self.g(x_prev)
+            delta = abs(x_next - x_prev)
+            residual = abs(self.f(x_next))
+
+            Rich.debug_log(
+                f"итер. {iteration:>3}: x = {x_next:.6f}, "
+                f"|Δx| = {delta:.6f}, |f(x)| = {residual:.2e}"
+            )
+
+            if delta < self.accuracy and residual < self.accuracy:
+                Rich.print_spacer()
+                Rich.success_log(
+                    f"Сошлось за {iteration} итераций. Корень x ≈ {x_next:.6f}"
+                )
+                return x_next
+
+            x_prev = x_next
+
+        Rich.warning_log(f"Лимит итераций исчерпан. x = {x_prev:.6f}")
+        return x_prev
+
+    def f(self, x: float) -> float:
+        return 1 / (1 + x ** 4) - x ** 2
+
+    def g(self, x: float) -> float:
+        return 1 / sqrt(1 + x ** 4)
+
+    def dg(self, x: float) -> float:
+        return -2 * x ** 3 / ((1 + x ** 4) ** 1.5)
+
+    def check_convergence(self, a: float, b: float, points: int = 20) -> bool:
+        Rich.simple_log("Проверка сходимости метода простой итерации")
+        max_q, worst_x = 0.0, a
+        for i in range(points + 1):
+            x = a + (b - a) * i / points
+            q = abs(self.dg(x))
+            if q > max_q:
+                max_q, worst_x = q, x
+
+        Rich.debug_log(f"max |g'(x)| = {max_q:.6f} в точке x = {worst_x:.4f}")
+        if max_q < 1:
+            Rich.success_log(f"Метод сходится: q = {max_q:.4f} < 1")
+            return True
+        Rich.warning_log(f"Метод может расходиться: q = {max_q:.4f} ≥ 1")
+        return False
 
 
-simple_iteration_method = SimpleIterationMethod()
+simpleIterationMethod = SimpleIterationMethod()
