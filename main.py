@@ -4,7 +4,7 @@ from pathlib import Path
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QIcon
 
-from core.simple_iteration_method import simple_iteration_method
+from core.simple_iteration_method import simpleIterationMethod
 from core.utils.function_research import find_bracket
 from gui.apps_window_with_graphics import AppWindow
 from utils.output_rich import Rich
@@ -22,9 +22,12 @@ if __name__ == "__main__":
     else:
         Rich.warning_log(f"Корень не найден на заданном промежутке")
 
+    a_border = span[0]
+    b_border = span[1]
+
     Rich.print_spacer()
 
-    simple_iteration_method.run()
+    simpleIterationMethod.run(a_border, b_border)
 
     app = QApplication(sys.argv)
     app_window = AppWindow()
