@@ -1,6 +1,6 @@
 import numpy as np
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import (
     FigureCanvasQTAgg,
@@ -50,8 +50,29 @@ class AppWindow(QWidget):
         self.setMinimumSize(700, 500)
         self.setStyleSheet(f"background-color: {Style.general_background_color};")
 
+        # Работа с вкладками
+        self.tab_widget = QTabWidget()
+
+        # Вкладки
+        tab_main_widget = QWidget()
+        self.tab_second_widget = QWidget()
+
+        # Загрузка вкладок
+        self.tab_widget.addTab(tab_main_widget, "Метод касательных (Ньютона)")
+        self.tab_widget.addTab(self.tab_second_widget, "Метод простых итераций")
+
+        # основной лейаут
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
+        main_layout.addWidget(self.tab_widget)
+
+        # вкладка 1
+        layout_tab1 = QVBoxLayout()
+        tab_main_widget.setLayout(layout_tab1)
+
+        # вкладка 2
         main_vertical_lay = QVBoxLayout()
-        self.setLayout(main_vertical_lay)
+        self.tab_second_widget.setLayout(main_vertical_lay)
 
         # создание фигуры (размер в дюймах)
         self.figure = Figure(figsize=(6, 4), dpi=100)
@@ -99,7 +120,7 @@ class AppWindow(QWidget):
 
     def draw_plot_simple_iteration_method(self) -> None:
         """
-        Рисует g(x), y=x, корень и траекторию итераций.
+        Рисует g(x), y=x, корень и траекторию итераций для метода простых итераций
 
         :return: None
         """
