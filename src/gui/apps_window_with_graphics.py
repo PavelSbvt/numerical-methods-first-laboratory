@@ -17,7 +17,8 @@ class AppWindow(QWidget):
     Показывает f(x, t), ось 0x, границы [a, b], корень и итерации.
     """
 
-    def __init__(self, a: float, b: float, t: float = 1.0,
+    def __init__(self, a: float, b: float,window_title: str, chapter: str,
+                 t: float = 1.0,
                  x_root: float = None, history: list = None) -> None:
         """
         Конструктор
@@ -28,7 +29,9 @@ class AppWindow(QWidget):
          простых итераций
         :param history: массив со всеми полученными промежуточными
          (и искомым) приближёнными решениями
-         :return: None
+        :param window_title: принимает имя окна на PyQt
+        :param chapter: принимает имя раздела окна (для упрощения)
+        :return: None
         """
 
         super().__init__()
@@ -41,8 +44,9 @@ class AppWindow(QWidget):
         self.x_root = x_root
         # массив со всеми решениями (промежуточными и итоговым)
         self.history = history or []
+        self.window_title = window_title
 
-        self.setWindowTitle("AppWindow")
+        self.setWindowTitle(f"AppWindow{chapter}")
         self.setMinimumSize(700, 500)
         self.setStyleSheet(f"background-color: {Style.general_background_color};")
 
@@ -125,7 +129,7 @@ class AppWindow(QWidget):
         # корень — точка пересечения g(x) и y=x
         if self.x_root is not None:
             self.ax.plot(self.x_root, self.x_root, "o", color="blue",
-                         markersize=10,
+                         markersize=5,
                          label=f"корень x ≈ {self.x_root:.4f}")
 
         # итерации — «паутинка»
@@ -136,18 +140,18 @@ class AppWindow(QWidget):
                 xk1 = hx[k + 1]
                 # вертикаль: (x_k, 0) - (x_k, g(x_k))
                 self.ax.plot([xk, xk], [xk, xk1],
-                             color="orange", linewidth=0.9, alpha=0.8)
+                             color="orange", linewidth=1.5, alpha=1)
                 # горизонталь: (x_k, g(x_k)) - (x_{k+1}, g(x_k))
                 self.ax.plot([xk, xk1], [xk1, xk1],
-                             color="orange", linewidth=0.9, alpha=0.8)
+                             color="orange", linewidth=1.5, alpha=1)
 
             # отдельно отметь все x_k как точки на оси 0x
             self.ax.plot(hx, [0] * len(hx), "x",
                          color="darkorange", markersize=8,
-                         label="xₖ (итерации)")
+                         label="xₖ на оси 0x")
 
         # оформление
-        self.ax.set_title(f"Метод простой итерации, t = {self.t}")
+        self.ax.set_title(f"{self.window_title}, t = {self.t}")
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
         # включение координатной сетки на графике
