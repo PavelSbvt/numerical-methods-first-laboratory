@@ -3,6 +3,7 @@ import sys
 from PyQt6.QtWidgets import QApplication
 
 from core.simple_iteration_method import simpleIterationMethod
+from  core.tangent_method import tangentMethod
 from core.utils.function_research import find_bracket
 from gui.apps_window_with_graphics import AppWindow
 from utils.output_rich import Rich
@@ -34,15 +35,30 @@ if __name__ == "__main__":
 
     # окно с графиком и промежуточными решениями тангенциального уравнения
     # методом простых итераций
-    app_window = AppWindow(
+    appWindowSimpleIteration = AppWindow(
         a=a_border,
         b=b_border,
+        window_title="Метод простых итераций",
+        chapter="/simple_iteration_method",
         t=simpleIterationMethod.t,
         x_root=x_root,
         history=simpleIterationMethod.list_iterations,
     )
 
+    x_root_tangent = tangentMethod.run(a_border, b_border)
+
+    appWindowTangent = AppWindow(
+        a=a_border,
+        b=b_border,
+        window_title="Метод касательных (Ньютона)",
+        chapter="/tangent_method",
+        t=tangentMethod.t,
+        x_root=x_root,
+        history=tangentMethod.list_iterations,
+    )
+
     Rich.debug_log("Показ главного окна")
-    app_window.show()
+    appWindowSimpleIteration.show()
+    appWindowTangent.show()
 
     sys.exit(app.exec())
