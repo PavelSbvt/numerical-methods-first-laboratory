@@ -16,6 +16,7 @@ class SimpleIterationMethod:
         self.accuracy = 0.001
         self.max_iter = 10
         self.t = 1
+        self.list_iterations = []
 
     def run(self, a: float, b: float) -> None:
         """
@@ -32,26 +33,28 @@ class SimpleIterationMethod:
         Rich.simple_log("Запуск метода простой итерации")
         Rich.simple_log(f"f(x) = 1/(1 + x**4) - {self.t}*x**2")
         Rich.simple_log(f"g(x) = 1 / sqrt({self.t} * (1 + x**4))")
-        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], ε = {self.accuracy}")
+        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], e = {self.accuracy}")
         Rich.print_spacer()
 
-        # 1. проверка сходимости
+        # проверка сходимости
         self.check_convergence(a, b)
 
-        # 2. x0 = середина отрезка
+        # x0 = середина отрезка
         x0 = (a + b) / 2
         Rich.debug_log(f"x0 = {x0:.6f}")
 
-        # 3. итерации
+        # итерации
+        self.list_iterations = [x0]
         x_prev = x0
         for iteration in range(1, self.max_iter + 1):
             x_next = self.g(x_prev)
+            self.list_iterations.append(x_next)
             delta = abs(x_next - x_prev)
             residual = abs(self.f(x_next))
 
             Rich.debug_log(
-                f"итер. {iteration:>3}: x = {x_next:.6f}, "
-                f"|Δx| = {delta:.6f}, |f(x)| = {residual:.2e}"
+                f"итерация {iteration:>3}: x = {x_next:.6f}, "
+                f"|дельта x| = {delta:.6f}, |f(x)| = {residual:.6f}"
             )
 
             if delta < self.accuracy and residual < self.accuracy:
@@ -63,7 +66,8 @@ class SimpleIterationMethod:
 
             x_prev = x_next
 
-        Rich.warning_log(f"Лимит итераций исчерпан. x = {x_prev:.6f}")
+        Rich.warning_log(f"После выполнения доступного количества итераций, "
+                         f"приближённое решение необходимой1 точности не нашлось. x = {x_prev:.6f}")
         return x_prev
 
     def f(self, x: float) -> float:
