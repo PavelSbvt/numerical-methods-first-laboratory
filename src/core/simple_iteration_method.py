@@ -49,9 +49,11 @@ class SimpleIterationMethod:
         self.list_iterations = [x0]
 
         x_prev = x0
+        Rich.debug_log(f"Итерация №0: x0 = {x_prev:.6f}")
         # Проход по итерациям
         for iteration in range(1, self.max_iter + 1):
             x_next = self.g(x_prev)
+            Rich.debug_log(f"Выбран следующий икс: {x_next:.6f}")
             self.list_iterations.append(x_next)
             delta = abs(x_next - x_prev)
             # промежуточное значение функции для текущего приближённого значения
@@ -67,14 +69,14 @@ class SimpleIterationMethod:
             if delta < self.accuracy and residual < self.accuracy:
                 Rich.print_spacer()
                 Rich.success_log(
-                    f"Сошлось за {iteration} итераций. Корень x ≈ {x_next:.6f}"
+                    f"Сошлось за {iteration} итераций. Приближённое решение X* = {x_next:.6f}"
                 )
                 return x_next
 
             x_prev = x_next
 
         Rich.warning_log(f"После выполнения доступного количества итераций, "
-                         f"приближённое решение необходимой1 точности не нашлось. x = {x_prev:.6f}")
+                         f"приближённое решение необходимой точности не нашлось. x = {x_prev:.6f}")
         return x_prev
 
 
