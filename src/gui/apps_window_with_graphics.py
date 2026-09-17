@@ -18,7 +18,18 @@ class AppWindow(QWidget):
     """
 
     def __init__(self, a: float, b: float, t: float = 1.0,
-                 x_root: float = None, history: list = None):
+                 x_root: float = None, history: list = None) -> None:
+        """
+        Конструктор
+        :param a: левая граница отрезка с единственным решением
+        :param b: правая граница отрезка с единственным решением
+        :param t: принимает значение t - определено вариантом (t=c)
+        :param x_root: массив с промежуточными решениями уравнения методом
+         простых итераций
+        :param history: массив со всеми полученными промежуточными
+         (и искомым) приближёнными решениями
+         :return: None
+        """
         super().__init__()
 
         # сохраняем данные для графика
