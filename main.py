@@ -14,7 +14,7 @@ Rich.simple_log("Запуск программы")
 Rich.print_spacer()
 
 if __name__ == "__main__":
-    span = find_bracket(1, 0.0, 100.0, 0.05)
+    span = find_bracket(1, 0.0, 2.0, 0.05)
 
     if span:
         Rich.simple_log(f"отрезок с единственным "
@@ -22,18 +22,23 @@ if __name__ == "__main__":
     else:
         Rich.warning_log(f"Корень не найден на заданном промежутке")
 
+
     a_border = span[0]
     b_border = span[1]
 
     Rich.print_spacer()
 
-    simpleIterationMethod.run(a_border, b_border)
+    x_root = simpleIterationMethod.run(a_border, b_border)
 
     app = QApplication(sys.argv)
-    app_window = AppWindow()
 
-    icon_path = Path('resources/images/icons/icon_pdf_maker_255_size.ico')
-    app.setWindowIcon(QIcon(f"{icon_path.as_posix()}"))
+    app_window = AppWindow(
+        a=a_border,
+        b=b_border,
+        t=simpleIterationMethod.t,
+        x_root=x_root,
+        history=simpleIterationMethod.list_iterations,
+    )
 
     Rich.debug_log("Показ главного окна")
     app_window.show()
