@@ -1,8 +1,6 @@
 import sys
-from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtGui import QIcon
 
 from core.simple_iteration_method import simpleIterationMethod
 from core.utils.function_research import find_bracket
@@ -14,6 +12,7 @@ Rich.simple_log("Запуск программы")
 Rich.print_spacer()
 
 if __name__ == "__main__":
+    # Поиск и получение отрезка
     span = find_bracket(1, 0.0, 2.0, 0.05)
 
     if span:
@@ -22,16 +21,19 @@ if __name__ == "__main__":
     else:
         Rich.warning_log(f"Корень не найден на заданном промежутке")
 
-
+    # Границы
     a_border = span[0]
     b_border = span[1]
 
     Rich.print_spacer()
 
+    # массив с приближёнными решениями
     x_root = simpleIterationMethod.run(a_border, b_border)
 
     app = QApplication(sys.argv)
 
+    # окно с графиком и промежуточными решениями тангенциального уравнения
+    # методом простых итераций
     app_window = AppWindow(
         a=a_border,
         b=b_border,
