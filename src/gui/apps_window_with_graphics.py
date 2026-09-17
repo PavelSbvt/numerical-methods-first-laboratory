@@ -49,16 +49,24 @@ class AppWindow(QWidget):
         main_vertical_lay = QVBoxLayout()
         self.setLayout(main_vertical_lay)
 
+        # создание фигуры (размер в дюймах)
         self.figure = Figure(figsize=(6, 4), dpi=100)
+        # Добавление на холст оси (axes) — область,
+        # в которой будут рисоваться графики функций.
+        # 111 - первые ячейка, столбец, строка.
         self.ax = self.figure.add_subplot(111)
 
+        # превращает Figure (математический объект) в Qt-виджет
         self.canvas = FigureCanvasQTAgg(self.figure)
+        # панель инструментов над графиком
         toolbar = NavigationToolbar(self.canvas, self)
 
         main_vertical_lay.addWidget(toolbar)
-        main_vertical_lay.addWidget(self.canvas)   # ← один раз!
+        main_vertical_lay.addWidget(self.canvas)
 
+        # рисование функции
         self.draw_plot()
+
         Rich.success_log("Окно с графиком построено")
 
 
@@ -88,61 +96,66 @@ class AppWindow(QWidget):
 
         :return: None
         """
-        
-        self.ax.clear()
 
+        self.ax.clear()
+        # ax - объект осей
+
+        # pad - отступ от границ холста, для лучшей видимости
         pad = 0.3
         x_min = max(0.0, self.a - pad)
         x_max = self.b + pad
         x = np.linspace(x_min, x_max, 500)
 
-        # 1. кривая y = g(x)
+        # кривая y = g(x)
         y_g = self.g(x)
-        self.ax.plot(x, y_g, color="crimson", linewidth=2,
+        # метод ax, который рисует линии на осях
+        self.ax.plot(x, y_g, color="red", linewidth=2,
                      label=f"g(x) = 1/√({self.t}·(1+x⁴))")
 
-        # 2. прямая y = x
+        # прямая y = x
         self.ax.plot(x, x, color="black", linewidth=1.5, linestyle="-",
                      label="y = x")
 
-        # 3. границы [a, b]
+        # границы [a, b]
         self.ax.axvline(self.a, color="green", linestyle="--",
                         linewidth=1, alpha=0.6, label=f"a = {self.a:.3f}")
         self.ax.axvline(self.b, color="green", linestyle="--",
                         linewidth=1, alpha=0.6, label=f"b = {self.b:.3f}")
 
-        # 4. корень — точка пересечения g(x) и y=x
+        # корень — точка пересечения g(x) и y=x
         if self.x_root is not None:
             self.ax.plot(self.x_root, self.x_root, "o", color="blue",
                          markersize=10,
                          label=f"корень x ≈ {self.x_root:.4f}")
 
-        # 5. итерации — «паутинка»
+        # итерации — «паутинка»
         if len(self.history) > 1:
             hx = self.history
             for k in range(len(hx) - 1):
                 xk = hx[k]
                 xk1 = hx[k + 1]
-                # вертикаль: (x_k, 0) → (x_k, g(x_k))
+                # вертикаль: (x_k, 0) - (x_k, g(x_k))
                 self.ax.plot([xk, xk], [xk, xk1],
                              color="orange", linewidth=0.9, alpha=0.8)
-                # горизонталь: (x_k, g(x_k)) → (x_{k+1}, g(x_k))
+                # горизонталь: (x_k, g(x_k)) - (x_{k+1}, g(x_k))
                 self.ax.plot([xk, xk1], [xk1, xk1],
                              color="orange", linewidth=0.9, alpha=0.8)
 
-            # отдельно отметим все x_k как точки на оси 0x
+            # отдельно отметь все x_k как точки на оси 0x
             self.ax.plot(hx, [0] * len(hx), "x",
                          color="darkorange", markersize=8,
                          label="xₖ (итерации)")
 
-        # 6. оформление
+        # оформление
         self.ax.set_title(f"Метод простой итерации, t = {self.t}")
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
+        # включение координатной сетки на графике
         self.ax.grid(True)
-        self.ax.legend(loc="best")
+        # включение легенды — таблички в углу графика
+        self.ax.legend(loc="upper right")
         self.ax.set_xlim(x_min, x_max)
-        self.ax.set_ylim(x_min, x_max)  # одинаковые оси — чтобы y=x был под 45°
+        self.ax.set_ylim(x_min, x_max)  # y=x
         self.ax.set_aspect("equal", adjustable="box")  # квадратные клетки
-
+        # команда «перерисовать».
         self.canvas.draw()
