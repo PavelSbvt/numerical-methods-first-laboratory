@@ -47,21 +47,7 @@ if __name__ == "__main__":
         history=simpleIterationMethod.list_iterations,
     )
 
-    x_root_tangent = tangentMethod.run(a_border, b_border)
-
-    appWindowTangent = AppWindow(
-        a=a_border,
-        b=b_border,
-        window_title="Метод касательных (Ньютона)",
-        chapter="/tangent_method",
-        t=tangentMethod.t,
-        x_root=x_root,
-        history=tangentMethod.list_iterations,
-    )
-
-    Rich.debug_log("Показ главного окна")
     appWindowSimpleIteration.show()
-    appWindowTangent.show()
 
     App = QApplication(sys.argv)
     icon_path = Path('resources/images/icons/icon_lab.ico')
