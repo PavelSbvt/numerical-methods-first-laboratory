@@ -1,6 +1,8 @@
 import sys
+from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 
 from core.simple_iteration_method import simpleIterationMethod
 from  core.tangent_method import tangentMethod
@@ -60,5 +62,9 @@ if __name__ == "__main__":
     Rich.debug_log("Показ главного окна")
     appWindowSimpleIteration.show()
     appWindowTangent.show()
+
+    App = QApplication(sys.argv)
+    icon_path = Path('resources/images/icons/icon_lab.ico')
+    App.setWindowIcon(QIcon(f"{icon_path.as_posix()}"))
 
     sys.exit(app.exec())
