@@ -69,7 +69,10 @@ class AppWindow(QWidget):
         main_vertical_lay.addWidget(self.canvas)
 
         # рисование функции
-        self.draw_plot()
+        if self.window_title == "Метод простых итераций":
+            self.draw_plot_simple_iteration_method()
+        else:
+            pass
 
         Rich.success_log("Окно с графиком построено")
 
@@ -94,7 +97,7 @@ class AppWindow(QWidget):
         return 1 / np.sqrt(self.t * (1 + x ** 4))
 
 
-    def draw_plot(self) -> None:
+    def draw_plot_simple_iteration_method(self) -> None:
         """
         Рисует g(x), y=x, корень и траекторию итераций.
 
