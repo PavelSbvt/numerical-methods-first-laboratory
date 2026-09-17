@@ -93,9 +93,10 @@ class TangentMethod:
     def run(self, a: float, b: float) -> float:
         Rich.print_spacer()
         Rich.simple_log("Запуск метода касательных (Ньютона)")
-        Rich.simple_log(f"f(x) = 1/(1 + x**4) - {self.t}*x**2")
-        Rich.simple_log(f"f'(x) = -4x^3/(1+x^4)^2 - {2 * self.t}*x")
-        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], ε = {self.accuracy}")
+        Rich.simple_log(f"f(x) = 1/(1 + x**4) - t*x**2")
+        Rich.simple_log(f"f'(x) = -4x^3/(1+x^4)^2 - 2*t*x")
+        Rich.simple_log("f''(x) = (20x^6 - 12x^2)/(1+x^4)^3 - 2t.")
+        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], ε = 0.001")
         Rich.print_spacer()
 
         # проверка применимости
@@ -126,7 +127,7 @@ class TangentMethod:
 
             Rich.debug_log(
                 f"итерация №{iteration}: x = {x_next:.6f}, "
-                f"|Δx| = {delta:.6f}, |f(x)| = {residual:.2e}"
+                f"|Δx| = {delta:.6f}, |f(x)| = {residual:.8f}"
             )
 
             if delta < self.accuracy and residual < self.accuracy:
