@@ -19,7 +19,7 @@ class SimpleIterationMethod:
         # массив со всеми полученными промежуточными (и искомым) приближёнными решениями
         self.list_iterations = []
 
-    def run(self, a: float, b: float) -> None:
+    def run(self, a: float, b: float) -> float:
         """
         Метод для запуска процесса поиска решения
         трансцендентного уравнения методом простой итерации
@@ -27,7 +27,8 @@ class SimpleIterationMethod:
         :param a: Левая граница отрезка
         :param b: Правая граница отрезка
 
-        :return: None
+        :return: float - приближённое решение тангенциального уравнения
+         методом простых итераций
         """
 
         Rich.print_spacer()
@@ -85,13 +86,16 @@ class SimpleIterationMethod:
 
         return 1 / (1 + x ** 4) - x ** 2
 
+
     def g(self, x: float) -> float:
         """
         Функция, вычисляющая значение функции g(x) в точке икс
         :param x: принимает значение переменной икс
         :return: значение функции g в точке икс
         """
+
         return 1 / sqrt(1 + x ** 4)
+
 
     def dg(self, x: float) -> float:
         """
@@ -100,6 +104,7 @@ class SimpleIterationMethod:
         :return: значение производной функции f в точке икс
         """
         return -2 * x ** 3 / ((1 + x ** 4) ** 1.5)
+
 
     def check_convergence(self, a: float, b: float, points: int = 20) -> bool:
         """

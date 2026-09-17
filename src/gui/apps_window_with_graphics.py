@@ -30,13 +30,16 @@ class AppWindow(QWidget):
          (и искомым) приближёнными решениями
          :return: None
         """
+
         super().__init__()
 
         # сохраняем данные для графика
         self.a = a
         self.b = b
         self.t = t
+        # приближённое решение уравнения
         self.x_root = x_root
+        # массив со всеми решениями (промежуточными и итоговым)
         self.history = history or []
 
         self.setWindowTitle("AppWindow")
@@ -56,20 +59,36 @@ class AppWindow(QWidget):
         main_vertical_lay.addWidget(self.canvas)   # ← один раз!
 
         self.draw_plot()
-        Rich.success_log("Окно с графиком построено :)")
+        Rich.success_log("Окно с графиком построено")
 
-    def f(self, x, t=None):
-        """f(x, t) = 1/(1 + x^4) - t*x^2."""
-        t = self.t if t is None else t
-        return 1 / (1 + x ** 4) - t * x ** 2
 
-    def g(self, x, t=None):
-        """g(x, t) = 1 / sqrt(t * (1 + x^4))."""
-        t = self.t if t is None else t
-        return 1 / np.sqrt(t * (1 + x ** 4))
+    def f(self, x):
+        """
+        Функция, вычисляющая значение функции f(x, t) в точке икс
+        :param x: принимает значение переменной икс
+        :return: значение функции f в точке икс
+        """
+
+        return 1 / (1 + x ** 4) - self.t * x ** 2
+
+
+    def g(self, x):
+        """
+        Функция, вычисляющая значение функции g(x) в точке икс
+        :param x: принимает значение переменной икс
+        :return: значение функции g в точке икс
+        """
+
+        return 1 / np.sqrt(self.t * (1 + x ** 4))
+
 
     def draw_plot(self) -> None:
-        """Рисует g(x), y=x, корень и траекторию итераций (паутинку)."""
+        """
+        Рисует g(x), y=x, корень и траекторию итераций.
+
+        :return: None
+        """
+        
         self.ax.clear()
 
         pad = 0.3

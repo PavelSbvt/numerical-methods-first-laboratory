@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     Rich.print_spacer()
 
-    # массив с приближёнными решениями
+    # приближённое решение уравнения
     x_root = simpleIterationMethod.run(a_border, b_border)
 
     app = QApplication(sys.argv)
