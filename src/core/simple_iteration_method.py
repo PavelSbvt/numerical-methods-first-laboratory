@@ -77,6 +77,7 @@ class SimpleIterationMethod:
                          f"приближённое решение необходимой1 точности не нашлось. x = {x_prev:.6f}")
         return x_prev
 
+
     def f(self, x: float) -> float:
         """
         Функция, вычисляющая значение функции f(x, t) в точке икс
@@ -103,6 +104,7 @@ class SimpleIterationMethod:
         :param x: принимает значение переменной икс
         :return: значение производной функции f в точке икс
         """
+
         return -2 * x ** 3 / ((1 + x ** 4) ** 1.5)
 
 
