@@ -18,6 +18,8 @@ class SimpleIterationMethod:
         self.t = 1
         # массив со всеми полученными промежуточными (и искомым) приближёнными решениями
         self.list_iterations = []
+        # максимальное значение модуля производной на этом отрезке
+        self.max_q = 0
 
     def run(self, a: float, b: float) -> float:
         """
@@ -69,10 +71,10 @@ class SimpleIterationMethod:
 
             # Проверка на достаточную точность приближённого решения и дельты
             # (разницы между двумя последними прибл. реш.)
-            if delta < self.accuracy and residual < self.accuracy:
+            if delta < self.accuracy and (abs(x_next - x_prev) <= (1 - self.max_q)/self.max_q*self.accuracy):
                 Rich.print_spacer()
                 Rich.success_log(
-                    f"Сошлось за {iteration} итераций. Приближённое решение X* = {x_next:.6f}"
+                    f"Сошлось за {iteration} итераций. Приближённое решение X* = {x_next:.6f}, q = {self.max_q:.6f}"
                 )
                 return x_next
 
@@ -134,6 +136,7 @@ class SimpleIterationMethod:
             q = abs(self.dg(x))
             if q > max_q:
                 max_q, worst_x = q, x
+                self.max_q = q
 
         Rich.debug_log(f"max |g'(x)| = {max_q:.6f} в точке x = {worst_x:.4f}")
         if max_q < 1:
