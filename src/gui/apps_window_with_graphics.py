@@ -17,7 +17,8 @@ class AppWindow(QWidget):
     Показывает f(x, t), ось 0x, границы [a, b], корень и итерации.
     """
 
-    def __init__(self, a: float, b: float,window_title: str, chapter: str,
+    def __init__(self,
+                 a: float, b: float,
                  t: float = 1.0,
                  x_root: float = None, history: list = None) -> None:
         """
@@ -29,8 +30,6 @@ class AppWindow(QWidget):
          простых итераций
         :param history: массив со всеми полученными промежуточными
          (и искомым) приближёнными решениями
-        :param window_title: принимает имя окна на PyQt
-        :param chapter: принимает имя раздела окна (для упрощения)
         :return: None
         """
 
@@ -44,9 +43,8 @@ class AppWindow(QWidget):
         self.x_root = x_root
         # массив со всеми решениями (промежуточными и итоговым)
         self.history = history or []
-        self.window_title = window_title
 
-        self.setWindowTitle(f"AppWindow{chapter}")
+        self.setWindowTitle(f"numerical-methods-first-laboratory")
         self.setMinimumSize(700, 500)
         self.setStyleSheet(f"background-color: {Style.general_background_color};")
 
@@ -59,7 +57,7 @@ class AppWindow(QWidget):
 
         # Загрузка вкладок
         self.tab_widget.addTab(tab_main_widget, "Метод касательных (Ньютона)")
-        self.tab_widget.addTab(self.tab_second_widget, "Метод простых итераций")
+        self.tab_widget.addTab(self.tab_second_widget, "Метод простой итерации")
 
         # основной лейаут
         main_layout = QVBoxLayout()
@@ -89,11 +87,22 @@ class AppWindow(QWidget):
         main_vertical_lay.addWidget(toolbar)
         main_vertical_lay.addWidget(self.canvas)
 
+        self.figure_tangent = Figure(figsize=(6, 4), dpi=100)
+        # Добавление на холст оси (axes) — область,
+        # в которой будут рисоваться графики функций.
+        # 111 - первые ячейка, столбец, строка.
+        self.ax_tangent = self.figure_tangent.add_subplot(111)
+
+        # превращает Figure (математический объект) в Qt-виджет
+        self.canvas_tangent = FigureCanvasQTAgg(self.figure_tangent)
+        # панель инструментов над графиком
+        toolbar_tangent = NavigationToolbar(self.canvas_tangent, self)
+
+        layout_tab1.addWidget(toolbar_tangent)
+        layout_tab1.addWidget(self.canvas_tangent)
+
         # рисование функции
-        if self.window_title == "Метод простых итераций":
-            self.draw_plot_simple_iteration_method()
-        else:
-            pass
+        self.draw_plot_simple_iteration_method()
 
         Rich.success_log("Окно с графиком построено")
 
@@ -156,7 +165,7 @@ class AppWindow(QWidget):
                          markersize=5,
                          label=f"корень x ≈ {self.x_root:.4f}")
 
-        # итерации — «паутинка»
+        # итерации — индикация пути
         if len(self.history) > 1:
             hx = self.history
             for k in range(len(hx) - 1):
@@ -169,13 +178,8 @@ class AppWindow(QWidget):
                 self.ax.plot([xk, xk1], [xk1, xk1],
                              color="orange", linewidth=1.5, alpha=1)
 
-            # отдельно отметь все x_k как точки на оси 0x
-            self.ax.plot(hx, [0] * len(hx), "x",
-                         color="darkorange", markersize=8,
-                         label="xₖ на оси 0x")
-
         # оформление
-        self.ax.set_title(f"{self.window_title}, t = {self.t}")
+        self.ax.set_title(f"Метод простых итераций, t = {self.t}")
         self.ax.set_xlabel("x")
         self.ax.set_ylabel("y")
         # включение координатной сетки на графике
