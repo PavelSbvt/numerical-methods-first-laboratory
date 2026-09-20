@@ -16,7 +16,7 @@ def func(x: float, t: int) -> float:
     return 1 / (1 + x**4) - t * x**2
 
 
-def dfunc(x: float, t: int) -> float:
+def derivative_func(x: float, t: int) -> float:
     """
     Производная f'(x, t) = -4x^3 / (1 + x^4)^2 - 2t * x.
     Нужна для проверки единственности корня.
@@ -44,7 +44,7 @@ def checking_uniqueness(t: int, a: float, b: float, points: int = 10) -> bool:
     signs = set()
     for i in range(points + 1):
         x = a + (b - a) * i / points
-        signs.add(dfunc(x, t) > 0)
+        signs.add(derivative_func(x, t) > 0)
 
     return len(signs) == 1
 
@@ -69,7 +69,7 @@ def find_bracket(t: int, a: float, b: float, step: float) -> Optional[tuple]:
     while x < b:
         if func(x, t) * func(x + step, t) < 0:
             if checking_uniqueness(t, x, x + step):
-                Rich.debug_log(
+                Rich.success_log(
                     f"Найден отрезок [{x:.3f}, {x + step:.3f}], "
                     f"f' знак не меняет — корень единственный"
                 )
