@@ -31,8 +31,8 @@ class SimpleIterationMethod:
          методом простых итераций
         """
 
-        Rich.print_spacer()
         Rich.simple_log("Запуск метода простой итерации")
+        Rich.print_spacer()
         Rich.simple_log(f"f(x) = 1/(1 + x**4) - {self.t}*x**2")
         Rich.simple_log(f"g(x) = 1 / sqrt({self.t} * (1 + x**4))")
         Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], e = {self.accuracy}")
@@ -43,24 +43,27 @@ class SimpleIterationMethod:
 
         # x0 = середина отрезка - любой x, определяемый как начальное приближение
         x0 = (a + b) / 2
-        Rich.debug_log(f"x0 = {x0:.6f}")
+        Rich.debug_log(f"Выберем произвольную точку х0, которую примем за грубое приближение корня: x0 = {x0:.6f}")
+        Rich.debug_log("подставим x0 в правую часть уравнения х = g(x)")
 
         # итерации
         self.list_iterations = [x0]
 
+        Rich.debug_log("Тогда получим некоторое число х1 = g(x0)")
+
         x_prev = x0
-        Rich.debug_log(f"Итерация №0: x0 = {x_prev:.6f}")
         # Проход по итерациям
         for iteration in range(1, self.max_iter + 1):
             x_next = self.g(x_prev)
-            Rich.debug_log(f"Выбран следующий икс: {x_next:.6f}")
+            Rich.debug_log(f"x{len(self.list_iterations)}: {x_next:.6f}")
+
             self.list_iterations.append(x_next)
             delta = abs(x_next - x_prev)
             # промежуточное значение функции для текущего приближённого значения
-            residual = abs(self.f(x_next))
+            residual = abs(self.func(x_next))
 
             Rich.debug_log(
-                f"итерация №{iteration}: x = {x_next:.6f}, "
+                f"итерация №{iteration}: x{len(self.list_iterations) - 1} = {x_next:.6f}, "
                 f"|дельта x| = {delta:.6f}, |f(x)| = {residual:.6f}"
             )
 
@@ -73,6 +76,11 @@ class SimpleIterationMethod:
                 )
                 return x_next
 
+            else:
+                Rich.debug_log(f"По найденному значению х{len(self.list_iterations) - 1} "
+                               f"определим точку х{len(self.list_iterations)}")
+                Rich.print_spacer_points()
+
             x_prev = x_next
 
         Rich.warning_log(f"После выполнения доступного количества итераций, "
@@ -80,7 +88,7 @@ class SimpleIterationMethod:
         return x_prev
 
 
-    def f(self, x: float) -> float:
+    def func(self, x: float) -> float:
         """
         Функция, вычисляющая значение функции f(x, t) в точке икс
         :param x: принимает значение переменной икс
