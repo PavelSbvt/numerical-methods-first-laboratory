@@ -29,7 +29,7 @@ def derivative_func(x: float, t: int) -> float:
     return -4 * x ** 3 / (1 + x ** 4) ** 2 - 2 * t * x
 
 
-def checking_uniqueness(t: int, a: float, b: float, points: int = 10) -> bool:
+def checking_uniqueness(t: int, a: float, b: float, points: int = 100) -> bool:
     """
     Проверяет, что f'(x, t) не меняет знак на отрезке [a, b].
     Если знак не меняется — функция монотонна — корень единственный.
