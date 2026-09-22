@@ -35,6 +35,7 @@ if __name__ == "__main__":
     # − уточнение корня, т.е. нахождение приближённого решения с заданной
     # точностью при помощи метода простых итераций
     x_root = simpleIterationMethod.run(a_border, b_border)
+    x_root_tangent = tangentMethod.run(a_border, b_border)
 
     app = QApplication(sys.argv)
 
