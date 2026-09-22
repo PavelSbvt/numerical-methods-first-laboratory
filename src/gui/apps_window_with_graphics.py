@@ -1,6 +1,6 @@
 import numpy as np
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QScrollArea
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qtagg import (
     FigureCanvasQTAgg,
@@ -70,7 +70,20 @@ class AppWindow(QWidget):
 
         # вкладка 2
         main_vertical_lay = QVBoxLayout()
-        self.tab_second_widget.setLayout(main_vertical_lay)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+
+        scroll_content = QWidget()
+        scroll_content.setLayout(main_vertical_lay)
+
+        scroll_content.setMinimumHeight(1200)
+
+        scroll_area.setWidget(scroll_content)
+
+        tab_second_layout = QVBoxLayout()
+        tab_second_layout.addWidget(scroll_area)
+        self.tab_second_widget.setLayout(tab_second_layout)
 
         # создание фигуры (размер в дюймах)
         self.figure = Figure(figsize=(6, 4), dpi=100)
@@ -84,8 +97,20 @@ class AppWindow(QWidget):
         # панель инструментов над графиком
         toolbar = NavigationToolbar(self.canvas, self)
 
+        # график для функции f(x)
+        self.figure_f_func = Figure(figsize=(6, 4), dpi=100)
+        self.ax_f_func = self.figure_f_func.add_subplot(111)
+
+        # превращает Figure (математический объект) в Qt-виджет
+        self.canvas_f_func = FigureCanvasQTAgg(self.figure_f_func)
+        # панель инструментов над графиком
+        toolbar_f_func = NavigationToolbar(self.canvas_f_func, self)
+
         main_vertical_lay.addWidget(toolbar)
         main_vertical_lay.addWidget(self.canvas)
+
+        main_vertical_lay.addWidget(toolbar_f_func)
+        main_vertical_lay.addWidget(self.canvas_f_func)
 
         self.figure_tangent = Figure(figsize=(6, 4), dpi=100)
         # Добавление на холст оси (axes) — область,
@@ -103,6 +128,8 @@ class AppWindow(QWidget):
 
         # рисование функции
         self.draw_plot_simple_iteration_method()
+
+        self.draw_raw_graphic()
 
         Rich.success_log("Окно с графиком построено")
 
@@ -191,3 +218,49 @@ class AppWindow(QWidget):
         self.ax.set_aspect("equal", adjustable="box")  # квадратные клетки
         # команда «перерисовать».
         self.canvas.draw()
+
+    def draw_raw_graphic(self) -> None:
+        """
+        Функция для рисования графика f(x, t) и индикация на нём найденных корней.
+        :return:
+        """
+        self.ax_f_func.clear()
+        # ax - объект осей
+
+        # pad - отступ от границ холста, для лучшей видимости
+        pad = 0.3
+        x_min = max(0.0, self.a - pad)
+        x_max = self.b + pad
+        x = np.linspace(x_min, x_max, 500)
+
+        # кривая y = g(x)
+        y_f = self.f(x)
+        # метод ax, который рисует линии на осях
+        self.ax_f_func.plot(x, y_f, color="blue", linewidth=2,
+                     label=f"f(x) = f(x) = 1/(1 + x**4) - {self.t}*x**2")
+        if self.x_root is not None:
+            self.ax_f_func.plot(
+                self.x_root, 0,  # координаты: (x*, 0)
+                "o",  # маркер — круг
+                color="red",
+                markersize=8,
+                label=f"корень x ≈ {self.x_root:.4f}"
+            )
+            # можно ещё добавить вертикальную линию от корня до оси X
+            self.ax_f_func.axvline(
+                self.x_root,
+                color="red", linestyle="--", linewidth=1, alpha=0.6
+            )
+        # оформление
+        self.ax_f_func.set_title(f"исходная функция, t = {self.t}")
+        self.ax_f_func.set_xlabel("x")
+        self.ax_f_func.set_ylabel("y")
+        # включение координатной сетки на графике
+        self.ax_f_func.grid(True)
+        # включение легенды — таблички в углу графика
+        self.ax_f_func.legend(loc="upper right")
+        self.ax_f_func.set_xlim(x_min, x_max)
+        self.ax_f_func.set_ylim(x_min, x_max)  # y=x
+        self.ax_f_func.set_aspect("equal", adjustable="box")  # квадратные клетки
+        # команда «перерисовать».
+        self.canvas_f_func.draw()
