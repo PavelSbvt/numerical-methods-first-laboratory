@@ -58,6 +58,7 @@ class TangentMethod:
         if fa * fb >= 0:
             Rich.warning_log(f"f(a)·f(b) ≥ 0 — корень может отсутствовать")
             return False
+
         Rich.debug_log(f"f(a)·f(b) = {fa * fb:.6e} < 0 — есть корень на отрезке")
 
         # проверка знаков f' и f'' в нескольких точках
@@ -93,10 +94,11 @@ class TangentMethod:
     def run(self, a: float, b: float) -> float:
         Rich.print_spacer()
         Rich.simple_log("Запуск метода касательных (Ньютона)")
+        Rich.print_spacer()
         Rich.simple_log(f"f(x) = 1/(1 + x**4) - t*x**2")
         Rich.simple_log(f"f'(x) = -4x^3/(1+x^4)^2 - 2*t*x")
         Rich.simple_log("f''(x) = (20x^6 - 12x^2)/(1+x^4)^3 - 2t.")
-        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], ε = 0.001")
+        Rich.debug_log(f"Отрезок: [{a:.3f}, {b:.3f}], точность = {self.accuracy}")
         Rich.print_spacer()
 
         # проверка применимости
