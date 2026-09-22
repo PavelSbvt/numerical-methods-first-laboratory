@@ -45,7 +45,7 @@ class AppWindow(QWidget):
         self.history = history or []
 
         self.setWindowTitle(f"numerical-methods-first-laboratory")
-        self.setMinimumSize(700, 500)
+        self.setMinimumSize(800, 700)
         self.setStyleSheet(f"background-color: {Style.general_background_color};")
 
         # Работа с вкладками
@@ -60,30 +60,29 @@ class AppWindow(QWidget):
         self.tab_widget.addTab(self.tab_second_widget, "Метод простой итерации")
 
         # основной лейаут
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-        main_layout.addWidget(self.tab_widget)
-
-        # вкладка 1
-        layout_tab1 = QVBoxLayout()
-        tab_main_widget.setLayout(layout_tab1)
-
-        # вкладка 2
-        main_vertical_lay = QVBoxLayout()
+        outer_layout = QVBoxLayout()
+        self.setLayout(outer_layout)
 
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
 
+        inner_layout = QVBoxLayout()
+
         scroll_content = QWidget()
-        scroll_content.setLayout(main_vertical_lay)
-
-        scroll_content.setMinimumHeight(1200)
-
+        scroll_content.setLayout(inner_layout)
         scroll_area.setWidget(scroll_content)
 
-        tab_second_layout = QVBoxLayout()
-        tab_second_layout.addWidget(scroll_area)
-        self.tab_second_widget.setLayout(tab_second_layout)
+        outer_layout.addWidget(scroll_area)
+
+        # вкладка 1
+        layout_tab1 = QVBoxLayout()
+        tab_main_widget.setLayout(layout_tab1)
+        tab_main_widget.setMinimumHeight(300)
+
+        # вкладка 2
+        main_vertical_lay = QVBoxLayout()
+        self.tab_second_widget.setLayout(main_vertical_lay)
+        self.tab_second_widget.setMinimumHeight(700)
 
         # создание фигуры (размер в дюймах)
         self.figure = Figure(figsize=(6, 4), dpi=100)
@@ -103,14 +102,12 @@ class AppWindow(QWidget):
 
         # превращает Figure (математический объект) в Qt-виджет
         self.canvas_f_func = FigureCanvasQTAgg(self.figure_f_func)
+        self.canvas_f_func.setMinimumSize(300, 300)
         # панель инструментов над графиком
         toolbar_f_func = NavigationToolbar(self.canvas_f_func, self)
 
         main_vertical_lay.addWidget(toolbar)
         main_vertical_lay.addWidget(self.canvas)
-
-        main_vertical_lay.addWidget(toolbar_f_func)
-        main_vertical_lay.addWidget(self.canvas_f_func)
 
         self.figure_tangent = Figure(figsize=(6, 4), dpi=100)
         # Добавление на холст оси (axes) — область,
@@ -125,6 +122,11 @@ class AppWindow(QWidget):
 
         layout_tab1.addWidget(toolbar_tangent)
         layout_tab1.addWidget(self.canvas_tangent)
+
+        inner_layout.addWidget(toolbar_f_func)
+        inner_layout.addWidget(self.canvas_f_func)
+
+        inner_layout.addWidget(self.tab_widget)
 
         # рисование функции
         self.draw_plot_simple_iteration_method()
