@@ -59,12 +59,14 @@ class TangentMethod:
             Rich.warning_log(f"f(a)·f(b) ≥ 0 — корень может отсутствовать")
             return False
 
-        Rich.debug_log(f"f(a)·f(b) = {fa * fb:.6e} < 0 — есть корень на отрезке")
+        Rich.debug_log(f"f(a)·f(b) < 0 — есть корень на отрезке")
 
-        # проверка знаков f' и f'' в нескольких точках
+        # проверка знаков f' и f'' в нескольких точках (проверка на отсутствие точек
+        # перегиба и монотонность)
         signs_df, signs_d2f = set(), set()
-        for i in range(21):
-            x = a + (b - a) * i / 20
+        n = 100
+        for i in range(n + 1):
+            x = a + (b - a) * i / n
             signs_df.add(self.df(x) > 0)
             signs_d2f.add(self.d2f(x) > 0)
 
@@ -79,16 +81,36 @@ class TangentMethod:
 
     def choose_x0(self, a: float, b: float) -> float:
         """
-        Выбирает x0 из {a, b} так, чтобы f(x0)·f''(x0) > 0.
+        Выбирает x0 из [a, b] так, чтобы f(x0)·f''(x0) > 0.
         :param a: принимает левую границу отрезка
         :param b: принимает правую границу отрезка
+        :return: float - вычисленная точка x0
         """
+
         if self.f(a) * self.d2f(a) > 0:
             x0 = a
         else:
             x0 = b
         Rich.debug_log(f"Выбрано x0 = {x0} (f(x0)·f''(x0) > 0)")
         return x0
+
+
+    def estimate_m1_M2(self, a: float, b: float) -> tuple[float, float]:
+        """
+        Оценка m1 = min|f'(x)| и M2 = max|f''(x)| на [a, b].
+        :param a: левая граница отрезка
+        :param b: правая граница отрезка
+        :return: пара чисел с плавающей точкой - минимальное значение первой
+         производной и максимально второй
+        """
+        n = 100
+        m1 = float('inf')  # плюс бесконечность
+        M2 = 0
+        for i in range(n + 1):
+            x = a + (b - a) * i / n
+            m1 = min(m1, abs(self.df(x)))
+            M2 = max(M2, abs(self.d2f(x)))
+        return m1, M2
 
 
     def run(self, a: float, b: float) -> float:
@@ -103,7 +125,11 @@ class TangentMethod:
 
         # проверка применимости
         if not self.check_convergence(a, b):
-            Rich.warning_log("Условия сходимости не выполнены, продолжаем на свой риск")
+            Rich.warning_log("Условия сходимости не выполнены - возможны неточные данные")
+
+        m1, M2 = self.estimate_m1_M2(a, b)
+        eps_prime = (2 * m1 * self.accuracy / M2) ** 0.5
+        Rich.debug_log(f"m1 = {m1:.6f}, M2 = {M2:.6f}, ε' = {eps_prime:.6f}")
 
         # выбор начального приближения
         x0 = self.choose_x0(a, b)
@@ -132,7 +158,7 @@ class TangentMethod:
                 f"|Δx| = {delta:.6f}, |f(x)| = {residual:.8f}"
             )
 
-            if delta < self.accuracy and residual < self.accuracy:
+            if delta < eps_prime:
                 Rich.print_spacer()
                 Rich.success_log(
                     f"Сошлось за {iteration} итераций. Корень x ≈ {x_next:.6f}"
