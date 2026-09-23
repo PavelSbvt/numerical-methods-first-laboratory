@@ -310,10 +310,13 @@ class AppWindow(QWidget):
                 markersize=8,
                 label=f"корень x ≈ {self.x_root:.4f}"
             )
-            # можно ещё добавить вертикальную линию от корня до оси X
-            self.ax_f_func.axvline(
-                self.x_root,
-                color="red", linestyle="--", linewidth=1, alpha=0.6
+        if self.x_root_tangent is not None:
+            self.ax_f_func.plot(
+                self.x_root_tangent, 0,  # координаты: (x*, 0)
+                "o",  # маркер — круг
+                color="green",
+                markersize=8,
+                label=f"корень x ≈ {self.x_root_tangent:.4f}"
             )
         # оформление
         self.ax_f_func.set_title(f"исходная функция, t = {self.t}")
