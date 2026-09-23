@@ -37,7 +37,7 @@ if __name__ == "__main__":
     x_root = simpleIterationMethod.run(a_border, b_border)
     x_root_tangent = tangentMethod.run(a_border, b_border)
 
-    app = QApplication(sys.argv)
+    App = QApplication(sys.argv)
 
     # окно с графиком и промежуточными решениями тангенциального уравнения
     # методом простых итераций и методом касательных (Ньютона)
@@ -45,13 +45,14 @@ if __name__ == "__main__":
         a=a_border,
         b=b_border,
         x_root=x_root,
+        x_root_tangent=x_root_tangent,
         history=simpleIterationMethod.list_iterations,
+        history_tangent=tangentMethod.list_iterations,
     )
 
     appWindowSimpleIteration.show()
 
-    App = QApplication(sys.argv)
     icon_path = Path('resources/images/icons/icon_lab.ico')
     App.setWindowIcon(QIcon(f"{icon_path.as_posix()}"))
 
-    sys.exit(app.exec())
+    sys.exit(App.exec())
