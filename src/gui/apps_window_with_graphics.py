@@ -20,16 +20,19 @@ class AppWindow(QWidget):
     def __init__(self,
                  a: float, b: float,
                  t: float = 1.0,
-                 x_root: float = None, history: list = None) -> None:
+                 x_root: float = None, x_root_tangent: float = None,
+                 history: list = None, history_tangent: list = None) -> None:
         """
         Конструктор
         :param a: левая граница отрезка с единственным решением
         :param b: правая граница отрезка с единственным решением
         :param t: принимает значение t - определено вариантом (t=c)
-        :param x_root: массив с промежуточными решениями уравнения методом
-         простых итераций
+        :param x_root: приближённое решение, полученное методом простой итерации
+        :param x_root_tangent: приближённое решение, полученное методом касательных
         :param history: массив со всеми полученными промежуточными
-         (и искомым) приближёнными решениями
+         (и искомым) приближёнными решениями методом простой итерации
+         :param history_tangent: массив со всеми полученными промежуточными
+         (и искомым) приближёнными решениями методом касательных
         :return: None
         """
 
@@ -41,8 +44,10 @@ class AppWindow(QWidget):
         self.t = t
         # приближённое решение уравнения
         self.x_root = x_root
+        self.x_root_tangent = x_root_tangent
         # массив со всеми решениями (промежуточными и итоговым)
         self.history = history or []
+        self.history_tangent = history_tangent or []
 
         self.setWindowTitle(f"numerical-methods-first-laboratory")
         self.setMinimumSize(800, 700)
@@ -124,6 +129,8 @@ class AppWindow(QWidget):
         # рисование функции
         self.draw_plot_simple_iteration_method()
 
+        self.draw_tangent_method()
+
         self.draw_raw_graphic()
 
         Rich.success_log("Окно с графиком построено")
@@ -147,6 +154,10 @@ class AppWindow(QWidget):
         """
 
         return 1 / np.sqrt(self.t * (1 + x ** 4))
+
+    def df(self, x):
+        """Первая производная f(x, t) = -4x³/(1+x⁴)² - 2t·x."""
+        return -4 * x ** 3 / (1 + x ** 4) ** 2 - 2 * self.t * x
 
 
     def draw_plot_simple_iteration_method(self) -> None:
@@ -213,6 +224,64 @@ class AppWindow(QWidget):
         self.ax.set_aspect("equal", adjustable="box")  # квадратные клетки
         # команда «перерисовать».
         self.canvas.draw()
+
+
+    def draw_tangent_method(self) -> None:
+        """
+        Рисует f(x) и касательные в точках итераций метода Ньютона.
+        """
+        self.ax_tangent.clear()
+
+        pad = 0.3
+        x_min = max(0.0, self.a - pad)
+        x_max = self.b + pad
+        x = np.linspace(x_min, x_max, 500)
+
+        # кривая y = f(x)
+        y_f = self.f(x)
+        self.ax_tangent.plot(x, y_f, color="blue", linewidth=2,
+                             label=f"f(x) = 1/(1+x⁴) − {self.t}·x²")
+
+        # ось Ox
+        self.ax_tangent.axhline(0, color="black", linewidth=1, alpha=0.5)
+
+        # касательные в точках итераций
+        if len(self.history_tangent) > 1:
+            hx = self.history_tangent
+            for k in range(len(hx) - 1):
+                xk = hx[k]
+                fxk = self.f(xk)
+                dfxk = self.df(xk)
+
+                # касательная: y = f(xk) + f'(xk)·(x − xk)
+                x_tangent = np.linspace(x_min, x_max, 100)
+                y_tangent = fxk + dfxk * (x_tangent - xk)
+                self.ax_tangent.plot(x_tangent, y_tangent,
+                                     color="green", linewidth=1, alpha=0.7)
+
+                # вертикальная линия от (x_k, 0) до (x_k, f(x_k))
+                self.ax_tangent.plot([xk, xk], [0, fxk],
+                                     color="gray", linewidth=0.8,
+                                     linestyle=":", alpha=0.6)
+
+        # корень
+        if self.x_root_tangent is not None:
+            self.ax_tangent.plot(self.x_root_tangent, 0, "o", color="red",
+                                 markersize=8,
+                                 label=f"корень x ≈ {self.x_root_tangent:.4f}")
+            self.ax_tangent.axvline(self.x_root_tangent, color="red",
+                                    linestyle="--", linewidth=1, alpha=0.6)
+
+        # оформление
+        self.ax_tangent.set_title(f"Метод касательных (Ньютона), t = {self.t}")
+        self.ax_tangent.set_xlabel("x")
+        self.ax_tangent.set_ylabel("y")
+        self.ax_tangent.grid(True)
+        self.ax_tangent.legend(loc="upper right")
+        self.ax_tangent.set_xlim(x_min, x_max)
+        self.ax_tangent.set_ylim(y_f.min() - 0.5, y_f.max() + 0.5)
+        self.canvas_tangent.draw()
+
 
     def draw_raw_graphic(self) -> None:
         """
