@@ -301,7 +301,7 @@ class AppWindow(QWidget):
         y_f = self.f(x)
         # метод ax, который рисует линии на осях
         self.ax_f_func.plot(x, y_f, color="blue", linewidth=2,
-                     label=f"f(x) = f(x) = 1/(1 + x**4) - {self.t}*x**2")
+                     label=f"f(x) = 1/(1 + x**4) - {self.t}*x**2")
         if self.x_root is not None:
             self.ax_f_func.plot(
                 self.x_root, 0,  # координаты: (x*, 0)
