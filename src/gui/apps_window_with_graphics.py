@@ -54,35 +54,28 @@ class AppWindow(QWidget):
         # Вкладки
         tab_main_widget = QWidget()
         self.tab_second_widget = QWidget()
+        third_tab = QWidget()
 
         # Загрузка вкладок
         self.tab_widget.addTab(tab_main_widget, "Метод касательных (Ньютона)")
         self.tab_widget.addTab(self.tab_second_widget, "Метод простой итерации")
+        self.tab_widget.addTab(third_tab, "График функции f(x)")
 
         # основной лейаут
-        outer_layout = QVBoxLayout()
-        self.setLayout(outer_layout)
-
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-
-        inner_layout = QVBoxLayout()
-
-        scroll_content = QWidget()
-        scroll_content.setLayout(inner_layout)
-        scroll_area.setWidget(scroll_content)
-
-        outer_layout.addWidget(scroll_area)
+        main_layout = QVBoxLayout()
+        self.setLayout(main_layout)
 
         # вкладка 1
         layout_tab1 = QVBoxLayout()
         tab_main_widget.setLayout(layout_tab1)
-        tab_main_widget.setMinimumHeight(300)
 
         # вкладка 2
         main_vertical_lay = QVBoxLayout()
         self.tab_second_widget.setLayout(main_vertical_lay)
-        self.tab_second_widget.setMinimumHeight(700)
+
+        # Третья вкладка
+        third_layout = QVBoxLayout()
+        third_tab.setLayout(third_layout)
 
         # создание фигуры (размер в дюймах)
         self.figure = Figure(figsize=(6, 4), dpi=100)
@@ -123,10 +116,10 @@ class AppWindow(QWidget):
         layout_tab1.addWidget(toolbar_tangent)
         layout_tab1.addWidget(self.canvas_tangent)
 
-        inner_layout.addWidget(toolbar_f_func)
-        inner_layout.addWidget(self.canvas_f_func)
+        third_layout.addWidget(toolbar_f_func)
+        third_layout.addWidget(self.canvas_f_func)
 
-        inner_layout.addWidget(self.tab_widget)
+        main_layout.addWidget(self.tab_widget)
 
         # рисование функции
         self.draw_plot_simple_iteration_method()
