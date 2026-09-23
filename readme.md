@@ -9,3 +9,5 @@ ___
 ![first_img](doc/images/readme/simple_iteration_run.png)
 ### Решение методом касательных (Ньютона)
 ![second_img](doc/images/readme/tangent_method_run.png)
+### Исходный график
+![raw_graphic](doc/images/readme/raw_func.png)
